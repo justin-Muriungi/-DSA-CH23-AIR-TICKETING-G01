@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyVoyage — Premium Air Ticketing</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/pages.css">
+    <link rel="stylesheet" href="css/utilities.css">
+    
+    <!-- Icons & External Libs -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+
+    <!-- ================= NAVBAR ================= -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="#/home" class="nav-brand" data-nav="home">
+                <div class="nav-brand-icon"><i data-lucide="plane"></i></div>
+                SkyVoyage
+            </a>
+
+            <!-- Desktop Links -->
+            <div class="nav-links">
+                <a href="#/home" class="nav-link active" data-nav="home">Home</a>
+                <a href="#/search" class="nav-link" data-nav="search">Flights</a>
+                <a href="#/checkin" class="nav-link" data-nav="checkin">Check-in</a>
+                <a href="#/reviews" class="nav-link" data-nav="reviews">Reviews</a>
+            </div>
+
+            <!-- Desktop Actions -->
+            <div class="nav-actions">
+                <!-- Guest View -->
+                <div id="nav-guest" class="flex gap-2 items-center">
+                    <button class="btn btn-ghost btn-sm" onclick="App.navigate('login')">Sign In</button>
+                    <button class="btn btn-primary btn-sm" onclick="App.navigate('register')">Sign Up</button>
+                </div>
+                
+                <!-- Logged In View -->
+                <div id="nav-user" class="hidden flex items-center gap-3">
+                    <!-- Notifications -->
+                    <div class="notification-bell">
+                        <button id="nav-notifications-btn" class="btn-icon">
+                            <i data-lucide="bell"></i>
+                            <div class="notification-count" style="display:none">0</div>
+                        </button>
+                        <div id="nav-notifications-dropdown" class="dropdown-menu" style="width:320px; right:0;">
+                            <div class="flex justify-between items-center p-3 border-b border-gray-700">
+                                <span class="font-bold">Notifications</span>
+                                <button class="text-xs text-cyan-400 hover:text-cyan-300" onclick="Notifications.markAllAsRead()">Mark all read</button>
+                            </div>
+                            <div id="notifications-list" class="max-h-80 overflow-y-auto"></div>
+                        </div>
+                    </div>
+
+                    <!-- User Dropdown -->
+                    <div class="dropdown" id="nav-user-dropdown-container">
+                        <div class="nav-user" id="nav-user-btn">
+                            <div class="avatar avatar-sm" id="nav-user-avatar">?</div>
+                            <div class="md-hidden-flex flex-col">
+                                <span class="nav-user-name" id="nav-user-name">User</span>
+                                <span class="nav-user-role" id="nav-user-role">Role</span>
+                            </div>
+                            <i data-lucide="chevron-down" class="w-4 h-4 ml-1 md-hidden"></i>
+                        </div>
+                        <div class="dropdown-menu" id="nav-user-dropdown">
+                            <button class="dropdown-item" id="nav-dash-link" onclick="App.navigate('dashboard')"><i data-lucide="layout-dashboard"></i> Dashboard</button>
+                            <button class="dropdown-item" id="nav-admin-link" style="display:none" onclick="App.navigate('admin')"><i data-lucide="shield"></i> Admin Panel</button>
+                            <div class="dropdown-divider"></div>
+                            <button class="dropdown-item text-error hover:bg-red-500/10" id="btn-logout"><i data-lucide="log-out"></i> Sign Out</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mobile Toggle -->
+                <div class="nav-toggle" id="nav-toggle">
+                    <i data-lucide="menu"></i>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Nav Overlay -->
+    <div class="mobile-nav" id="mobile-nav">
+        <a href="#/home" class="nav-link" data-nav="home">Home</a>
+        <a href="#/search" class="nav-link" data-nav="search">Flights</a>
+        <a href="#/checkin" class="nav-link" data-nav="checkin">Check-in</a>
+        <a href="#/reviews" class="nav-link" data-nav="reviews">Reviews</a>
+        <div class="divider my-4"></div>
+        
+        <div id="mobile-guest">
+            <button class="btn btn-secondary w-full mb-3" onclick="App.navigate('login'); App.closeMobileNav()">Sign In</button>
+            <button class="btn btn-primary w-full" onclick="App.navigate('register'); App.closeMobileNav()">Sign Up</button>
+        </div>
+        
+        <div id="mobile-user" class="hidden">
+            <button class="nav-link" id="nav-dash-link-mobile" onclick="App.navigate('dashboard'); App.closeMobileNav()"><i data-lucide="layout-dashboard"></i> Dashboard</button>
+            <button class="nav-link" id="nav-admin-link-mobile" style="display:none" onclick="App.navigate('admin'); App.closeMobileNav()"><i data-lucide="shield"></i> Admin Panel</button>
+            <button class="nav-link text-error" id="btn-logout-mobile"><i data-lucide="log-out"></i> Sign Out</button>
+        </div>
+    </div>
+
+
+    <!-- ================= MAIN CONTENT AREA ================= -->
+    <main class="main-content" id="app">
+
+        <!-- ================= PAGE: HOME ================= -->
+        <section id="page-home" class="page active">
+            <div class="hero">
+                <div class="hero-content">
+                    <img src="img/airplane_logo.png" alt="SkyVoyage Logo" class="hero-main-logo animate-planeFloat mx-auto mb-6" style="max-width: 250px; border-radius: var(--radius-lg); box-shadow: var(--shadow-glow-cyan);">
+                    <div class="hero-badge"><i data-lucide="sparkles" class="w-4 h-4"></i> Premium Travel Experience</div>
+                    <h1 class="hero-title">Discover the World with <span class="text-gradient">SkyVoyage</span></h1>
+                    <p class="hero-subtitle">Book your flights instantly, manage your trips effortlessly, and travel with unprecedented comfort.</p>
+
+                    <!-- Search Box -->
+                    <div class="search-box">
+                        <div class="search-type-toggle">
+                            <button class="search-type-btn" data-type="round-trip">Round Trip</button>
+                            <button class="search-type-btn active" data-type="one-way">One Way</button>
+                            <button class="search-type-btn" data-type="multi-city">Multi-city</button>
+                        </div>
+                        
+                        <form id="flight-search-form">
+                            <!-- Multi-city dynamic container (hidden by default) -->
+                            <div id="multi-city-fields" style="display:none;" class="mb-4">
+                               <div class="text-sm text-center text-secondary py-4">Multi-city search simulation</div>
+                            </div>
+
+                            <div class="search-fields relative">
+                                <div class="search-field autocomplete-wrapper">
+                                    <label>From</label>
+                                    <div class="input-icon-wrapper">
+                                        <i data-lucide="plane-takeoff" class="input-icon"></i>
+                                        <input type="text" id="search-from" placeholder="City or Airport" required autocomplete="off">
+                                    </div>
+                                    <div id="from-list" class="autocomplete-list"></div>
+                                </div>
+                                
+                                <div class="swap-btn" id="swap-airports"><i data-lucide="arrow-right-left" style="width:16px;height:16px"></i></div>
+
+                                <div class="search-field autocomplete-wrapper">
+                                    <label>To</label>
+                                    <div class="input-icon-wrapper">
+                                        <i data-lucide="plane-landing" class="input-icon"></i>
+                                        <input type="text" id="search-to" placeholder="City or Airport" required autocomplete="off">
+                                    </div>
+                                    <div id="to-list" class="autocomplete-list"></div>
+                                </div>
+
+                                <div class="search-field">
+                                    <label>Departure</label>
+                                    <input type="date" id="search-dep-date" required>
+                                </div>
+
+                                <div class="search-field" id="return-date-field" style="display:none;">
+                                    <label>Return</label>
+                                    <input type="date" id="search-ret-date">
+                                </div>
+                            </div>
+                            
+                            <div class="search-extra">
+                                <div class="search-field">
+                                    <label>Passengers</label>
+                                    <div class="input-icon-wrapper">
+                                        <i data-lucide="users" class="input-icon"></i>
+                                        <select id="search-passengers">
+                                            <option value="1">1 Adult</option>
+                                            <option value="2">2 Adults</option>
+                                            <option value="3">3 Adults</option>
+                                            <option value="4">4 Adults</option>
+                                            <option value="5">5 Adults</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="search-field">
+                                    <label>Class</label>
+                                    <select id="search-cabin">
+                                        <option value="economy">Economy</option>
+                                        <option value="premiumEconomy">Premium Economy</option>
+                                        <option value="business">Business</option>
+                                        <option value="first">First Class</option>
+                                    </select>
+                                </div>
+                                <div class="search-field flex items-end">
+                                    <button type="submit" class="btn btn-primary w-full h-[46px]">Search Flights</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container">
+                <section class="destinations-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Popular Destinations</h2>
+                        <p class="section-subtitle">Explore top routes currently trending on SkyVoyage</p>
+                    </div>
+                    <div class="grid grid-3 gap-6" id="popular-destinations">
+                        <!-- Populated by JS -->
+                    </div>
+                </section>
+            </div>
+        </section>
+
+
+        <!-- ================= PAGE: SEARCH RESULTS ================= -->
+        <section id="page-search" class="page">
+            <div class="container results-page">
+                <div class="results-header">
+                    <div id="results-summary">
+                        <!-- e.g. NBO to LHR ... -->
+                    </div>
+                    <div id="results-sort">
+                        <!-- Sort Pills -->
+                    </div>
+                </div>
+
+                <div class="results-layout">
+                    <!-- Filters Sidebar -->
+                    <aside class="results-filters" id="results-filters-panel">
+                        <!-- Populated by JS -->
+                    </aside>
+
+                    <!-- Results List -->
+                    <main class="results-list" id="results-list">
+                        <!-- Flight Cards Populated by JS -->
+                    </main>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================= PAGE: BOOKING FLOW ================= -->
+        <section id="page-booking" class="page">
+            <div class="container booking-page">
+                <div class="stepper" id="booking-stepper">
+                    <!-- Populated by JS -->
+                </div>
+                
+                <div class="booking-layout">
+                    <!-- Dynamic Step Content -->
+                    <main id="booking-content">
+                        <!-- Forms/SeatMap/Payment populated here based on step -->
+                    </main>
+
+                    <!-- Summary Sidebar -->
+                    <aside id="booking-sidebar">
+                        <!-- Booking summary populated here -->
+                    </aside>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================= PAGE: CONFIRMATION ================= -->
+        <section id="page-confirmation" class="page">
+            <div class="container">
+                <div id="confirmation-content" class="confirmation-page">
+                    <!-- Populated by JS upon successful payment -->
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================= PAGE: DASHBOARD (USER) ================= -->
+        <section id="page-dashboard" class="page">
+            <div class="container-fluid dashboard-layout">
+                <aside class="dashboard-sidebar" id="dashboard-sidebar">
+                    <!-- Populated by JS -->
+                </aside>
+                <main class="dashboard-content" id="dashboard-content">
+                    <!-- Populated by JS based on selected tab -->
+                </main>
+            </div>
+        </section>
+
+
+        <!-- ================= PAGE: ADMIN PANEL ================= -->
+        <section id="page-admin" class="page">
+            <div class="container-fluid dashboard-layout">
+                <aside class="dashboard-sidebar" id="admin-sidebar">
+                    <!-- Populated by JS -->
+                </aside>
+                <main class="dashboard-content" id="admin-content">
+                    <!-- Populated by JS based on admin tab -->
+                </main>
+            </div>
+        </section>
+
+
+        <!-- ================= PAGE: CHECK-IN ================= -->
+        <section id="page-checkin" class="page">
+            <div class="hero" style="min-height: 50vh; padding: 4rem 0;">
+                <div class="hero-content">
+                    <h1 class="text-4xl font-bold mb-4">Web Check-In</h1>
+                    <p class="text-secondary max-w-lg mx-auto">Check in up to 24 hours before your flight and get your boarding pass instantly.</p>
+                </div>
+            </div>
+            <div class="container -mt-16 relative z-10 pb-16">
+                <div class="card max-w-2xl mx-auto shadow-xl">
+                    <form id="checkin-form">
+                        <div class="grid grid-2 gap-4 items-end">
+                            <div class="form-group mb-0">
+                                <label class="form-label">Booking Reference (PNR)</label>
+                                <input type="text" id="checkin-pnr" class="form-input" placeholder="e.g. ABCDEF" required maxlength="6" style="text-transform: uppercase;">
+                            </div>
+                            <div class="form-group mb-0">
+                                <label class="form-label">Last Name</label>
+                                <input type="text" id="checkin-lastname" class="form-input" placeholder="Passenger Last Name" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-full mt-6">Find Booking</button>
+                    </form>
+                </div>
+
+                <div id="checkin-content" class="mt-12">
+                    <!-- Dynamic CheckIn flow / Boarding passes rendered here -->
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================= PAGE: REVIEWS ================= -->
+        <section id="page-reviews" class="page">
+            <div class="container py-12" id="reviews-content">
+                <!-- Populated by JS -->
+            </div>
+        </section>
+
+
+        <!-- ================= PAGE: LOGIN ================= -->
+        <section id="page-login" class="page">
+            <div class="auth-page">
+                <div class="auth-card">
+                    <div class="flex justify-center mb-6 text-cyan-400"><i data-lucide="plane-takeoff" style="width:48px;height:48px"></i></div>
+                    <h2 class="auth-title">Welcome Back</h2>
+                    <p class="auth-subtitle">Sign in to manage your bookings and preferences.</p>
+                    
+                    <form id="login-form">
+                        <div class="form-group">
+                            <label class="form-label">Email Address</label>
+                            <input type="email" id="login-email" class="form-input" placeholder="you@example.com" value="demo@skyvoyage.com" required>
+                        </div>
+                        <div class="form-group mb-2">
+                            <div class="flex justify-between items-center mb-2">
+                                <label class="form-label mb-0">Password</label>
+                                <a href="#" class="text-xs text-cyan-400 hover:underline" onclick="Auth.resetPassword('demo@skyvoyage.com')">Forgot?</a>
+                            </div>
+                            <input type="password" id="login-password" class="form-input" placeholder="••••••••" value="demo123" required>
+                        </div>
+                        
+                        <div class="bg-blue-900/20 p-3 rounded text-xs text-blue-300 mb-6 border border-blue-900/50">
+                            Demo Accounts:<br>
+                            Customer: demo@skyvoyage.com / demo123<br>
+                            Admin: admin@skyvoyage.com / admin123
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-block btn-lg">Sign In</button>
+                    </form>
+                    
+                    <div class="auth-footer">
+                        Don't have an account? <a onclick="App.navigate('register')">Sign up</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================= PAGE: REGISTER ================= -->
+        <section id="page-register" class="page">
+            <div class="auth-page" style="padding: 4rem 1rem;">
+                <div class="auth-card" style="max-width: 520px;">
+                    <div class="flex justify-center mb-4 text-cyan-400"><i data-lucide="user-plus" style="width:40px;height:40px"></i></div>
+                    <h2 class="auth-title">Create Account</h2>
+                    <p class="auth-subtitle">Join SkyVoyage for exclusive offers and easy booking.</p>
+                    
+                    <form id="register-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">First Name *</label>
+                                <input type="text" id="reg-firstname" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Last Name *</label>
+                                <input type="text" id="reg-lastname" class="form-input" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email Address *</label>
+                            <input type="email" id="reg-email" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Phone Number</label>
+                            <input type="tel" id="reg-phone" class="form-input" placeholder="+254 700 000 000">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Password *</label>
+                                <input type="password" id="reg-password" class="form-input" required minlength="6">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Confirm Password *</label>
+                                <input type="password" id="reg-confirm-password" class="form-input" required minlength="6">
+                            </div>
+                        </div>
+                        
+                        <label class="form-check mb-6">
+                            <input type="checkbox" required>
+                            <span class="text-xs">I agree to the Terms of Service and Privacy Policy</span>
+                        </label>
+
+                        <button type="submit" class="btn btn-primary btn-block btn-lg">Create Account</button>
+                    </form>
+                    
+                    <div class="auth-footer">
+                        Already have an account? <a onclick="App.navigate('login')">Sign in</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <div class="footer-brand">
+                        <div class="nav-brand-icon" style="width:32px;height:32px;font-size:16px"><i data-lucide="plane"></i></div>
+                        SkyVoyage
+                    </div>
+                    <p class="footer-desc">Redefining air travel with premium service, extensive routes, and an unforgettable journey from booking to destination.</p>
+                </div>
+                <div>
+                    <h4 class="footer-title">Company</h4>
+                    <div class="footer-links">
+                        <a class="footer-link">About Us</a>
+                        <a class="footer-link">Careers</a>
+                        <a class="footer-link">Press & Media</a>
+                        <a class="footer-link">Sustainability</a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="footer-title">Help & Support</h4>
+                    <div class="footer-links">
+                        <a class="footer-link">Contact Us</a>
+                        <a class="footer-link">FAQ</a>
+                        <a class="footer-link">Baggage Policy</a>
+                        <a class="footer-link">Refunds</a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="footer-title">Legal</h4>
+                    <div class="footer-links">
+                        <a class="footer-link">Terms of Service</a>
+                        <a class="footer-link">Privacy Policy</a>
+                        <a class="footer-link">Cookie Policy</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div>&copy; 2026 SkyVoyage Airlines. All rights reserved. (Demo Application)</div>
+                <div class="flex gap-4">
+                    <i data-lucide="facebook" class="w-5 h-5 text-gray-500 hover:text-white cursor-pointer"></i>
+                    <i data-lucide="twitter" class="w-5 h-5 text-gray-500 hover:text-white cursor-pointer"></i>
+                    <i data-lucide="instagram" class="w-5 h-5 text-gray-500 hover:text-white cursor-pointer"></i>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Global Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Initialization Scripts -->
+    <script src="js/data.js"></script>
+    <script src="js/dsa.js"></script>
+    <script src="js/notifications.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/flights.js"></script>
+    <script src="js/seatmap.js"></script>
+    <script src="js/payment.js"></script>
+    <script src="js/booking.js"></script>
+    <script src="js/checkin.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/admin.js"></script>
+    <script src="js/reviews.js"></script>
+
+    <script>
+        // Initialize icons
+        lucide.createIcons();
+    </script>
+</body>
+</html>
