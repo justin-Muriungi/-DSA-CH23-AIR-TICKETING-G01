@@ -47,4 +47,4 @@ Testing
 
 Demo video
 
-[link once recorded]
+https://youtu.be/BzLB_kMKMto
