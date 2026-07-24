@@ -39,7 +39,7 @@ Team
 [Felix Kiplangat] — system design
 [Paul Kioko] — data structures & algorithms
 [David Maina] — backend & testing
-[Justus Maina] — docs, benchmarking, demo video
+[Justus Ndung'u] — docs, benchmarking, demo video
 
 Testing
 
