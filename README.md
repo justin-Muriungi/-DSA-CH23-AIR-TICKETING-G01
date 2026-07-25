@@ -52,7 +52,7 @@ Paul Kioko — data structures & algorithms
 
 David Maina — backend & testing
 
-Justus Ndung'u — docs, benchmarking, demo video
+Justus Ndung'u— docs, benchmarking, demo video
 
 Testing
 
@@ -61,3 +61,4 @@ Testing
 Demo video
 
 https://youtu.be/BzLB_kMKMto
+
