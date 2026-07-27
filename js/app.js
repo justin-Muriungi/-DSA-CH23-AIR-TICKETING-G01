@@ -11,10 +11,12 @@ const App = {
     bookingData: {},
     bookingStep: 0,
     adminTab: 'overview',
-    dashboardTab: 'bookings'
+    dashboardTab: 'bookings',
+    theme: 'dark'
   },
 
   init() {
+    this.loadTheme();
     DB.init();
     AppDSA.init();
     this.loadSession();
@@ -31,6 +33,57 @@ const App = {
     Notifications.init();
 
     console.log('✈️ SkyVoyage App initialized');
+  },
+
+  loadTheme() {
+    const storedTheme = DB.get('theme');
+    const systemPrefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+    const initialTheme = storedTheme || window.__skyvoyageTheme || (systemPrefersLight ? 'light' : 'dark');
+    this.applyTheme(initialTheme, false);
+  },
+
+  applyTheme(theme, persist = true) {
+    const nextTheme = theme === 'light' ? 'light' : 'dark';
+    this.state.theme = nextTheme;
+
+    document.documentElement.dataset.theme = nextTheme;
+    document.documentElement.style.colorScheme = nextTheme;
+
+    if (persist) {
+      try {
+        DB.set('theme', nextTheme);
+      } catch (error) {
+        // Ignore storage failures and keep the in-memory theme active.
+      }
+    }
+
+    this.updateThemeControls();
+  },
+
+  toggleTheme() {
+    this.applyTheme(this.state.theme === 'light' ? 'dark' : 'light');
+  },
+
+  updateThemeControls() {
+    const isLight = this.state.theme === 'light';
+    const label = isLight ? 'Switch to dark mode' : 'Switch to light mode';
+    const icon = isLight ? 'moon' : 'sun';
+
+    const desktopButton = document.getElementById('theme-toggle');
+    if (desktopButton) {
+      desktopButton.setAttribute('aria-label', label);
+      desktopButton.setAttribute('title', label);
+      desktopButton.setAttribute('aria-pressed', String(isLight));
+      desktopButton.innerHTML = `<i data-lucide="${icon}"></i>`;
+    }
+
+    const mobileButton = document.getElementById('theme-toggle-mobile');
+    if (mobileButton) {
+      mobileButton.setAttribute('aria-label', label);
+      mobileButton.innerHTML = `<i data-lucide="${icon}"></i> ${isLight ? 'Dark mode' : 'Light mode'}`;
+    }
+
+    if (typeof lucide !== 'undefined') lucide.createIcons();
   },
 
   // --- Session Management ---
@@ -172,6 +225,13 @@ const App = {
     document.getElementById('btn-logout-mobile')?.addEventListener('click', () => {
       this.logout();
       this.closeMobileNav();
+    });
+
+    document.getElementById('theme-toggle')?.addEventListener('click', () => {
+      this.toggleTheme();
+    });
+    document.getElementById('theme-toggle-mobile')?.addEventListener('click', () => {
+      this.toggleTheme();
     });
 
     // User dropdown

@@ -883,6 +883,22 @@
   z-index: var(--z-dropdown);
 }
 
+html[data-theme='light'] .dropdown-menu,
+html[data-theme='light'] .autocomplete-list,
+html[data-theme='light'] .toast,
+html[data-theme='light'] .modal,
+html[data-theme='light'] .dashboard-sidebar {
+  background: rgba(255, 255, 255, 0.95);
+}
+
+html[data-theme='light'] .search-box,
+html[data-theme='light'] .card,
+html[data-theme='light'] .card-glass,
+html[data-theme='light'] .card-elevated,
+html[data-theme='light'] .stat-card {
+  background: rgba(255, 255, 255, 0.84);
+}
+
 .dropdown.open .dropdown-menu {
   opacity: 1;
   visibility: visible;

@@ -3,7 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkyVoyage — Premium Air Ticketing</title>
+    <title>SkyVoyage | Air Ticketing System</title>
+    <script>
+        (function () {
+            try {
+                const storedThemeValue = localStorage.getItem('skyvoyage_theme');
+                let storedTheme = null;
+                if (storedThemeValue) {
+                    try {
+                        storedTheme = JSON.parse(storedThemeValue);
+                    } catch (parseError) {
+                        storedTheme = storedThemeValue;
+                    }
+                }
+                const systemPrefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+                const theme = storedTheme || (systemPrefersLight ? 'light' : 'dark');
+                document.documentElement.dataset.theme = theme;
+                document.documentElement.style.colorScheme = theme;
+                window.__skyvoyageTheme = theme;
+            } catch (error) {
+                document.documentElement.dataset.theme = 'dark';
+                document.documentElement.style.colorScheme = 'dark';
+                window.__skyvoyageTheme = 'dark';
+            }
+        })();
+    </script>
     
     <!-- CSS -->
     <link rel="stylesheet" href="css/index.css">
@@ -77,6 +101,10 @@
                     </div>
                 </div>
 
+                <button id="theme-toggle" class="btn-icon" type="button" aria-label="Switch to light mode" title="Switch to light mode">
+                    <i data-lucide="sun"></i>
+                </button>
+
                 <!-- Mobile Toggle -->
                 <div class="nav-toggle" id="nav-toggle">
                     <i data-lucide="menu"></i>
@@ -92,6 +120,10 @@
         <a href="#/checkin" class="nav-link" data-nav="checkin">Check-in</a>
         <a href="#/reviews" class="nav-link" data-nav="reviews">Reviews</a>
         <div class="divider my-4"></div>
+        <button id="theme-toggle-mobile" class="btn btn-secondary w-full mb-3" type="button">
+            <i data-lucide="sun"></i>
+            Light mode
+        </button>
         
         <div id="mobile-guest">
             <button class="btn btn-secondary w-full mb-3" onclick="App.navigate('login'); App.closeMobileNav()">Sign In</button>
